@@ -1,0 +1,2 @@
+# HotelGuru
+Rendszerfejlesztés projekt
