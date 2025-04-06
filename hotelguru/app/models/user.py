@@ -1,24 +1,35 @@
 from __future__ import annotations
 from typing import List
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.extensions import db
+from app.extensions import db, Base
+from sqlalchemy import ForeignKey, Column, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import String
 
 
+UserRole = Table(
+    "userroles",
+    Base.metadata,
+    Column("user_id", ForeignKey("user_table.id")),
+    Column("role_id", ForeignKey("role_table.id"))
+)
+
+
 class User(db.Model):
     __tablename__ = "user_table"
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String(30))
     password: Mapped[str] = mapped_column(String(30))
     fname: Mapped[str] = mapped_column(String(30))
     phone: Mapped[str] = mapped_column(String(30))
-    address: Mapped[str] = mapped_column(String(30))
 
-    role: Mapped["Role"] = relationship(back_populates="role_table.user")
-    bookings: Mapped[List["Booking"]] = relationship(back_populates="booking_table.user")
-    rooms: Mapped[List["Room"]] = relationship(back_populates="room_table.user")
-    invoice: Mapped["Invoice"] = relationship(back_populates="invoice_table.user")
+    address_id: Mapped[int] = mapped_column(ForeignKey("address_table.id"))
+    address: Mapped["Address"] = relationship(back_populates="user", lazy=True)
+
+    role: Mapped["Role"] = relationship(secondary=UserRole, back_populates="users")
+    bookings: Mapped[List["Booking"]] = relationship(back_populates="user")
+    rooms: Mapped[List["Room"]] = relationship(back_populates="user")
+    invoice: Mapped["Invoice"] = relationship(back_populates="user")
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, name={self.fname!s}, email={self.email!r})"

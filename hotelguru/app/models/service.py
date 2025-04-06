@@ -7,8 +7,9 @@ from sqlalchemy.types import String
 
 class Service(db.Model):
     __tablename__ = "service_table"
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     booking_id: Mapped[int] = mapped_column(ForeignKey("booking_table.id"))
+    invoice_id: Mapped[int] = mapped_column(ForeignKey("invoice_table.id"))
     name: Mapped[str] = mapped_column(String(30))
     price: Mapped[int]
 
