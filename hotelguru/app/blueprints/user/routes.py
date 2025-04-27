@@ -1,5 +1,6 @@
 from . import bp
 from app.blueprints.user.schemas import UserResponseSchema, UserRequestSchema, UserLoginSchema, RoleSchema, AddressSchema
+from app.auth import generate_token
 from app.blueprints.user.service import UserService
 from apiflask import HTTPError
 
@@ -25,9 +26,10 @@ def user_registrate(json_data):
 @bp.input(UserLoginSchema, location="json")
 @bp.output(UserResponseSchema)
 def user_login(json_data):
-    success, response = UserService.user_login(json_data)
-    if success:
-        return response, 200
+    success, user_or_msg = UserService.user_login(json_data)
+if success:
+    token = generate_token(user_or_msg)
+    return {'access_token': token}, 200
     raise HTTPError(message=response, status_code=400)
 
 

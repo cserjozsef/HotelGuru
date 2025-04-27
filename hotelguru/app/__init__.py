@@ -2,6 +2,7 @@ from flask import Flask
 from apiflask import APIFlask
 from config import Config
 from .extensions import db
+from .auth import init_jwt
 import app.models.user
 import app.models.role
 import app.models.room
@@ -17,6 +18,7 @@ def create_app(config_class=Config):
                    title="HotelGuru API",
                    docs_path="/swagger")
     app.config.from_object(config_class)
+    init_jwt(app)
 
     db.init_app(app)
 
