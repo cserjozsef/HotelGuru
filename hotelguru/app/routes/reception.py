@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify
-from models import db, Booking, Invoice
+from app.extensions import db
+from app.models.booking import Booking
+from app.models.invoice import Invoice
 
 reception_bp = Blueprint('reception_bp', __name__)
 

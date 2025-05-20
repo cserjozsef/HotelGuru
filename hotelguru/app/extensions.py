@@ -1,11 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import MetaData
-
+from apiflask import HTTPTokenAuth
 
 class Base(DeclarativeBase):
     pass
-
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -18,3 +17,5 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 
 db = SQLAlchemy(model_class=Base, metadata=metadata)
+
+auth = HTTPTokenAuth()
