@@ -1,35 +1,51 @@
-from flask_jwt_extended import (
-    JWTManager,
-    create_access_token,
-    jwt_required,
-    get_jwt,
-    get_jwt_identity
-)
-from functools import wraps
-from apiflask import HTTPError
 import datetime
+from flask import current_app, g, jsonify
+from authlib.jose import jwt, JoseError
+from flask_httpauth import HTTPTokenAuth
+from functools import wraps
+from app.models.user import User  
 
-jwt = JWTManager()
+auth = HTTPTokenAuth(scheme='Bearer')
 
-def init_jwt(app):
-    app.config["JWT_SECRET_KEY"] = app.config.get("SECRET_KEY")
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(hours=1)
-    jwt.init_app(app)
+def generate_token(user_id):
+    header = {'alg': 'HS256'}
+    payload = {
+        'sub': user_id,
+        'iat': datetime.datetime.utcnow(),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+    }
+    token = jwt.encode(header, payload, current_app.config['SECRET_KEY']) 
+    if isinstance(token, bytes):
+        return token.decode('utf-8')
+    return token
 
-def roles_required(*required_roles):
-    def wrapper(fn):
-        @wraps(fn)
-        @jwt_required()
-        def decorator(*args, **kwargs):
-            claims = get_jwt()
-            user_roles = claims.get("roles", [])
-            if not any(role in user_roles for role in required_roles):
-                raise HTTPError(message="Permission denied", status_code=403)
-            return fn(*args, **kwargs)
-        return decorator
-    return wrapper
+@auth.verify_token
+def verify_token(token):
+    try:
+        data = jwt.decode(token, current_app.config['SECRET_KEY'])
+        data.validate_exp()
+        user_id = data['sub']
+        g.current_user_id = user_id
+ 
+        user = User.query.get(user_id)
+        if user:
+            g.current_user_roles = [role.name for role in user.roles]
+        else:
+            g.current_user_roles = []
+        return True
+    except JoseError:
+        return False
 
-def generate_token(user):
-    roles = [role.name for role in user.role]
-    additional_claims = {"roles": roles}
-    return create_access_token(identity=user.id, additional_claims=additional_claims)
+def role_required(role_name):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            roles = getattr(g, 'current_user_roles', [])
+            if role_name not in roles:
+                return jsonify({"message": "Access denied: insufficient permissions"}), 403
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+def init_jwt(app): 
+    pass

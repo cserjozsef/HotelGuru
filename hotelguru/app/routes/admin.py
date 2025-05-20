@@ -1,5 +1,8 @@
-from flask import Blueprint, request, jsonify
-from models import db, Room
+from app.extensions import db
+from app.models.room import Room
+from flask import Blueprint
+
+
 
 admin_bp = Blueprint('admin_bp', __name__)
 

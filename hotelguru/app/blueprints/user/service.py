@@ -4,54 +4,54 @@ from app.models.user import User
 from app.models.address import Address
 from app.models.role import Role
 from sqlalchemy import select
-
+from app.auth import generate_token
 
 class UserService:
 
     @staticmethod
-    def user_registrate(request):
+    def user_registrate(request_data: dict):
         try:
-            if db.session.execute(select(User).filter_by(email=request["email"])).scalar_one_or_none():
-                return False, "E-mail already exist!"
+            # Ellenőrzés, van-e már user ilyen emaillel
+            existing_user = db.session.execute(select(User).filter_by(email=request_data["email"])).scalar_one_or_none()
+            if existing_user:
+                return False, "E-mail already exists!"
 
-            request["address"] = Address(**request["address"])
-            user = User(**request)
-            user.set_password(user.password)
-            user.role = db.session.execute(select(Role).filter_by(name="User")).scalar_one()
+            # Címadat leválasztása a requestről
+            address_data = request_data.pop("address")
+            address = Address(**address_data)
+            db.session.add(address)
+            db.session.flush()  # hogy legyen ID-je az address-nek
+
+            # User létrehozása a maradék adatokkal és az address objektummal
+            user = User(**request_data, address=address)
+            
+            # Jelszó beállítása (nem a már eltávolított dict elemre hivatkozunk)
+            user.set_password(request_data.get("password", ""))
+
+            # Alapértelmezett szerepkör beállítása
+            guest_role = db.session.execute(select(Role).filter_by(name="Guest")).scalar_one()
+            user.roles.append(guest_role)
+
             db.session.add(user)
             db.session.commit()
+            return True, UserResponseSchema().dump(user)
         except Exception as ex:
-            return False, "Incorrect User data!"
-        return True, UserResponseSchema().dump(user)
+            return False, f"User registration failed: {ex}"
 
     @staticmethod
-    def user_login(request):
+    def token_generate(user):
+        roles = RoleSchema().dump(user.roles, many=True)
+        return generate_token(user, roles)
+
+    @staticmethod
+    def user_login(request_data: dict):
         try:
-            user = db.session.execute(select(User).filter_by(email=request["email"])).scalar_one()
-            if not user.check_password(request["password"]):
+            user = db.session.execute(select(User).filter_by(email=request_data["email"])).scalar_one()
+            if not user.check_password(request_data["password"]):
                 return False, "Incorrect e-mail or password!"
-        except Exception as ex:
-            return False, "Incorrect Login data!"
-        return True, UserResponseSchema().dump(user)
 
-    @staticmethod
-    def user_list_roles():
-        roles = db.session.query(Role).all()
-        return True, RoleSchema().dump(obj=roles, many=True)
-
-    @staticmethod
-    def list_user_roles(uid):
-        user = db.session.get(User, uid)
-        if user is None:
-            return False, "User not found!"
-        return True, RoleSchema().dump(obj=user.roles, many=True)
-
-    @staticmethod
-    def user_add_address(request):
-        try:
-            address = Address(**request)
-            db.session.add(address)
-            db.session.commit()
-        except Exception as ex:
-            return False, "Incorrect Address data!"
-        return True, address.id
+            user_schema = UserResponseSchema().dump(user)
+            user_schema["token"] = UserService.token_generate(user)
+            return True, user_schema
+        except Exception:
+            return False, "Incorrect login data!"
