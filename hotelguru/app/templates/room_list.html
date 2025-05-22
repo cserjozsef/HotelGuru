@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>List of Rooms</h3>
+
+  {% if rooms %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Number</th>
+            <th>Type</th>
+            <th>Capacity</th>
+            <th>Description</th>
+            <th>Amenities</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in rooms %}
+        <tr >
+            <td>{{ r.id }}</td>
+            <td>{{ r.type }}</td>
+            <td>{{ r.capacity }}</td>
+            <td>{{ r.description }}</td>
+
+            <td>
+                {% for a in r.amenities %}
+                {{ a.name }}<br/>
+                {% endfor %}
+            </td>
+
+            <td>{{ r.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+  {% else %}
+<p>There are no available rooms</p>
+  {% endif %}
+{% endblock %}

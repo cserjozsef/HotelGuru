@@ -5,3 +5,4 @@ import app.models.booking
 import app.models.invoice
 import app.models.service
 import app.models.address
+import app.models.amenity

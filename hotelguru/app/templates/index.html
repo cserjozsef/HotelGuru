@@ -1,57 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
 
 {% block content %}
 
-<form action="/add" method="POST">
 
-  <h3 align="center">Add People</h3>
-  <div class="form-group">
-    <label for="email">Name</label>
-    <input
-      type="text"
-      class="form-control"
-      id="email"
-      name="name"
-      placeholder="Enter name"
-    />
-  </div>
-
-  <div class="form-group">
-    <label for="address">Description (optional)</label>
-    <input
-      type="text"
-      class="form-control"
-      id="address"
-      name="description"
-      placeholder="Enter a description"
-    />
-  </div>
-
-  <div class="form-group">
-    <label for="fname">Description (optional)</label>
-    <input
-      type="text"
-      class="form-control"
-      id="fname"
-      name="description"
-      placeholder="Enter a description"
-    />
-  </div>
-
-  <div class="form-group">
-    <label for="phone">Description (optional)</label>
-    <input
-      type="text"
-      class="form-control"
-      id="phone"
-      name="description"
-      placeholder="Enter a description"
-    />
-  </div>
-
-   <button type="submit" name="add" value="add" class="btn btn-primary">Add Person</button>
-
-</form>
+<h1 align="center">HotelGuru Booking</h1>
 
 {% endblock %}

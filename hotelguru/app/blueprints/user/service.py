@@ -1,57 +1,95 @@
 from app.extensions import db
-from app.blueprints.user.schemas import UserResponseSchema, RoleSchema
+from app.blueprints.user.schemas import UserResponseSchema, RoleSchema, PayloadSchema, UserSchema
 from app.models.user import User
 from app.models.address import Address
 from app.models.role import Role
+from datetime import datetime, timedelta
+from authlib.jose import jwt
+from flask import current_app
 from sqlalchemy import select
-from app.auth import generate_token
 
 class UserService:
-
+    
     @staticmethod
-    def user_registrate(request_data: dict):
+    def user_register(request):
         try:
-            # Ellenőrzés, van-e már user ilyen emaillel
-            existing_user = db.session.execute(select(User).filter_by(email=request_data["email"])).scalar_one_or_none()
-            if existing_user:
+            if db.session.execute(select(User).filter_by(email=request["email"])).scalar_one_or_none():
                 return False, "E-mail already exists!"
-
-            # Címadat leválasztása a requestről
-            address_data = request_data.pop("address")
-            address = Address(**address_data)
-            db.session.add(address)
-            db.session.flush()  # hogy legyen ID-je az address-nek
-
-            # User létrehozása a maradék adatokkal és az address objektummal
-            user = User(**request_data, address=address)
-            
-            # Jelszó beállítása (nem a már eltávolított dict elemre hivatkozunk)
-            user.set_password(request_data.get("password", ""))
-
-            # Alapértelmezett szerepkör beállítása
-            guest_role = db.session.execute(select(Role).filter_by(name="Guest")).scalar_one()
-            user.roles.append(guest_role)
-
+            request["address"] = Address(**request["address"])
+            user = User(**request)
+            user.set_password(user.password)
+            user.roles.append(db.session.get(Role, 2))
             db.session.add(user)
             db.session.commit()
-            return True, UserResponseSchema().dump(user)
         except Exception as ex:
-            return False, f"User registration failed: {ex}"
+            return False, "Incorrect User data!"
+        return True, UserResponseSchema().dump(user)
 
     @staticmethod
-    def token_generate(user):
-        roles = RoleSchema().dump(user.roles, many=True)
-        return generate_token(user, roles)
-
-    @staticmethod
-    def user_login(request_data: dict):
+    def user_login(request):
         try:
-            user = db.session.execute(select(User).filter_by(email=request_data["email"])).scalar_one()
-            if not user.check_password(request_data["password"]):
-                return False, "Incorrect e-mail or password!"
-
+            user = db.session.execute(select(User).filter_by(email=request["email"])).scalar_one()
             user_schema = UserResponseSchema().dump(user)
             user_schema["token"] = UserService.token_generate(user)
-            return True, user_schema
-        except Exception:
-            return False, "Incorrect login data!"
+            if not user.check_password(request["password"]):
+                return False, "Incorrect email or password!"
+        except Exception as ex:
+            return False, "Incorrect Login data!"
+        return True, user_schema
+
+    @staticmethod
+    def user_update(request):
+        try:
+            user = db.session.get(User, request["id"])
+            address = db.session.get(Address, user.address_id)
+            if user:
+                user.email = request["email"]
+                user.name = request["name"]
+                address.city = request["address"].get("city")
+                address.street = request["address"].get("street")
+                address.postalcode = request["address"].get("postalcode")
+                user.address = address
+                user.phone = request["phone"]
+                db.session.commit()
+        except Exception as ex:
+            return False, str(ex)
+        return True, UserResponseSchema().dump(user)
+
+    @staticmethod
+    def user_delete(id):
+        try:
+            user = db.session.get(User, id)
+            address = db.session.get(Address, user.address_id)
+            if not user:
+                return False, "User does not exist"
+            elif user:
+                db.session.delete(user)
+                db.session.delete(address)
+                db.session.commit()
+                return True, f"User \"{user.name}\" has been deleted"
+        except Exception as ex:
+            return False, str(ex)
+        return True
+
+    @staticmethod
+    def user_get(id):
+        user = db.session.get(User, id)
+        if not user:
+            return False, "User does not exist"
+        return True, UserResponseSchema().dump(user)
+
+    @staticmethod
+    def user_list_all():
+        user = db.session.execute(select(User)).scalars()
+        return True, UserSchema().dump(user, many=True)
+
+
+    @staticmethod
+    def token_generate(user: User):
+        payload = PayloadSchema()
+        payload.exp = int((datetime.now() + timedelta(minutes=30)).timestamp())
+        payload.user_id = user.id
+        payload.email = user.email
+        payload.roles = RoleSchema().dump(obj=user.roles, many=True)
+
+        return jwt.encode({'alg': 'RS256'}, PayloadSchema().dump(payload), current_app.config['SECRET_KEY']).decode()
