@@ -26,7 +26,7 @@ def role_required(roles):
     def wrapper(fn):
         @wraps(fn)
         def decorated_function(*args, **kwargs):
-            user_roles = [item["name"] for item in auth.current_user.get("roles")]
+            user_roles = [item["name"] for item in auth.current_user.get("role")]
             for role in roles:
                 if role in user_roles:
                     return fn(*args, **kwargs)

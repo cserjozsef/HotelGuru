@@ -5,41 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f1ecb3d9-786c-4f32-a4a7-cc8be75de042" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../.ssh/private-key.pem" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/hotelguru.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/hotelguru.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.ssh/private-key.pem" beforeDir="false" afterPath="$PROJECT_DIR$/.ssh/private-key.pem" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.db" beforeDir="false" afterPath="$PROJECT_DIR$/app.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/auth.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/blueprints/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/blueprints/booking/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/booking/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/blueprints/booking/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/booking/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/blueprints/booking/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/booking/service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/blueprints/room/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/room/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/blueprints/room/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/room/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/blueprints/room/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/room/service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/blueprints/user/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/user/routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/blueprints/user/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/user/schemas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/blueprints/user/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/blueprints/user/service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/extensions.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/extensions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/address.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/address.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/booking.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/booking.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/invoice.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/invoice.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/role.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/role.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/forms/edit_user_form.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/forms/edit_user_form.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/forms/login_form.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/forms/login_form.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/models/room.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/room.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/admin.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/reception.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/user.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/app/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/room_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/room_list.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/init_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/init_db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/README" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/README" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/alembic.ini" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/alembic.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/env.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/script.py.mako" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/script.py.mako" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_app.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/migrations/versions/30072f909fc3_.py" beforeDir="false" afterPath="$PROJECT_DIR$/migrations/versions/30072f909fc3_.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +34,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="HTML File" />
         <option value="Python Script" />
       </list>
     </option>
@@ -60,12 +46,16 @@
   &quot;associatedIndex&quot;: 7
 }</component>
   <component name="ProjectId" id="2x9NvSeNrIPh02rDObTfPhXkPHO" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
     "Python.init_db.executor": "Run",
     "Python.role.executor": "Run",
     "Python.run_app.executor": "Run",
@@ -73,17 +63,17 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/regis/Desktop/3/app/forms",
+    "last_opened_file_path": "C:/Users/regis/Desktop/HotelGuru/hotelguru/app/templates",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\regis\Desktop\HotelGuru\hotelguru\app\templates" />
       <recent name="C:\Users\regis\Desktop\3\app\forms" />
       <recent name="C:\Users\regis\Desktop\3\app\templates" />
       <recent name="C:\Users\regis\Desktop\1\app\blueprints" />
       <recent name="C:\Users\regis\Desktop\1\app\blueprints\room" />
-      <recent name="C:\Users\regis\Desktop\1\app\blueprints\booking" />
     </key>
   </component>
   <component name="RunManager" selected="Python.run_app">

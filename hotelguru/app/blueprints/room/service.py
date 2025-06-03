@@ -28,8 +28,20 @@ class RoomService:
                 room.type = request["type"]
                 room.price = request["price"]
                 room.capacity = request["capacity"]
-                room.status = request["status"]
                 room.description = request["description"]
+                db.session.commit()
+            else:
+                return False, "Room does not exist"
+        except Exception as ex:
+            return False, str(ex)
+        return True, RoomSchema().dump(room)
+    
+    @staticmethod
+    def room_update_status(request):
+        try:
+            room = db.session.get(Room, request["id"])
+            if room:
+                room.status = request["status"]
                 db.session.commit()
             else:
                 return False, "Room does not exist"

@@ -4,23 +4,26 @@ from app.blueprints.room.schemas import RoomSchema
 from app.blueprints.invoice.schemas import InvoiceSchema
 
 
+class BookingRequestSchema(Schema):
+    check_in = fields.Date(format='%Y-%m-%d')
+    check_out = fields.Date(format='%Y-%m-%d')
+    comment = fields.String(allow_none=True)
+    user_id = fields.Integer()
+    room_id = fields.Integer()
+    invoice_id = fields.Integer()
+
 class BookingSchema(Schema):
+    id = fields.Integer()
     check_in = fields.String()
     check_out = fields.String()
     comment = fields.String(allow_none=True)
-    user = fields.Nested(UserSchema)
-    room = fields.Nested(RoomSchema)
-    invoice = fields.Nested(InvoiceSchema)
+    user_id = fields.Integer()
+    room_id = fields.Integer()
+    invoice_id = fields.Integer()
 
 
 class BookingUpdateSchema(Schema):
     id = fields.Integer()
     check_in = fields.String()
     check_out = fields.String()
-    comment = fields.String(allow_none=True)
-
-
-class BookingRequestSchema(Schema):
-    check_in = fields.Date(format='%Y-%m-%d')
-    check_out = fields.Date(format='%Y-%m-%d')
     comment = fields.String(allow_none=True)

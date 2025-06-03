@@ -37,7 +37,7 @@ def user_login(json_data):
 @bp.input(UserUpdateSchema, location="json")
 @bp.output(UserResponseSchema)
 @bp.auth_required(auth)
-@role_required(["User"])
+@role_required(["User", "Administrator", "Receptionist"])
 def user_update(json_data):
     success, response = UserService.user_update(json_data)
     if success:

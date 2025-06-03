@@ -6,7 +6,6 @@ class RoomRequestSchema(Schema):
     type = fields.String()
     price = fields.Integer()
     capacity = fields.Integer()
-    status = fields.String()
     description = fields.String()
 
 
@@ -25,5 +24,9 @@ class RoomUpdateSchema(Schema):
     type = fields.String()
     price = fields.Integer()
     capacity = fields.Integer()
-    status = fields.String()
     description = fields.String()
+    
+class RoomUpdateStatusSchema(Schema):
+    id = fields.Integer()
+    status = fields.String()
+    

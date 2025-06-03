@@ -1,6 +1,6 @@
 from app.blueprints import role_required
 from app.blueprints.booking import bp
-from app.blueprints.booking.schemas import BookingSchema, BookingUpdateSchema, BookingRequestSchema
+from app.blueprints.booking.schemas import BookingUpdateSchema, BookingRequestSchema, BookingSchema
 from app.blueprints.booking.service import BookingService
 from apiflask import HTTPError
 from app.extensions import auth
@@ -13,7 +13,8 @@ def index():
 
 @bp.post('/add')
 @bp.input(BookingRequestSchema, location="json")
-#@bp.auth_required(auth)
+@bp.auth_required(auth)
+@role_required(["User"])
 def address_add(json_data):
     success, response = BookingService.booking_add(json_data)
     if success:
@@ -33,7 +34,8 @@ def booking_update(json_data):
 
 
 @bp.delete('/delete/<int:id>')
-#@bp.auth_required(auth)
+@bp.auth_required(auth)
+@role_required(["Receptionist"])
 def booking_delete(id):
     success, response = BookingService.booking_delete(id)
     if success:

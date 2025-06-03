@@ -1,5 +1,5 @@
 from app.extensions import db
-from app.blueprints.booking.schemas import BookingSchema, BookingUpdateSchema
+from app.blueprints.booking.schemas import BookingSchema, BookingUpdateSchema, BookingRequestSchema
 from app.models.booking import Booking
 from datetime import datetime
 from sqlalchemy import select

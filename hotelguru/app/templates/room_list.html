@@ -14,11 +14,12 @@
             <th>Description</th>
             <th>Amenities</th>
             <th>Status</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        {% for r in rooms %}
         <tr >
+            {% for r in rooms %}
             <td>{{ r.id }}</td>
             <td>{{ r.type }}</td>
             <td>{{ r.capacity }}</td>
@@ -31,6 +32,10 @@
             </td>
 
             <td>{{ r.status }}</td>
+
+            {% if logged_in %}
+            <th><a href="{{url_for('room_page', id=r.id)}}">View Room</a></th>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

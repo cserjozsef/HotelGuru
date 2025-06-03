@@ -40,13 +40,15 @@ class RoleSchema(Schema):
 class PayloadSchema(Schema):
     user_id = fields.Integer()
     email = fields.String()
-    roles  = fields.List(fields.Nested(RoleSchema))
+    name = fields.String()
+    role  = fields.List(fields.Nested(RoleSchema))
     exp = fields.Integer()
 
 
 class UserUpdateSchema(Schema):
     id = fields.Integer()
     email = fields.String()
+    password = fields.String()
     name = fields.String()
     phone = fields.String()
     address = fields.Nested(AddressSchema)

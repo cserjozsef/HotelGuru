@@ -45,6 +45,7 @@ class UserService:
             if user:
                 user.email = request["email"]
                 user.name = request["name"]
+                user.set_password(request["password"])
                 address.city = request["address"].get("city")
                 address.street = request["address"].get("street")
                 address.postalcode = request["address"].get("postalcode")
@@ -90,6 +91,7 @@ class UserService:
         payload.exp = int((datetime.now() + timedelta(minutes=30)).timestamp())
         payload.user_id = user.id
         payload.email = user.email
-        payload.roles = RoleSchema().dump(obj=user.roles, many=True)
+        payload.name = user.name
+        payload.role = RoleSchema().dump(obj=user.roles, many=True)
 
         return jwt.encode({'alg': 'RS256'}, PayloadSchema().dump(payload), current_app.config['SECRET_KEY']).decode()

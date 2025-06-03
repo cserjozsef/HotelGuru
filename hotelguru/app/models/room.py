@@ -24,7 +24,7 @@ class Room(db.Model):
     description: Mapped[str] = mapped_column(String(30))
 
     amenities: Mapped[List["Amenity"]] = relationship(secondary=RoomAmenities, back_populates="rooms")
-    booking: Mapped[Optional["Booking"]] = relationship(back_populates="room")
+    booking: Mapped[List["Booking"]] = relationship(back_populates="room")
 
     def __repr__(self) -> str:
         return f"Room(id={self.id!r}, type={self.type!s}, price={self.price!r}, occupancy={self.occupancy!r}, description={self.description!r}, amenities={self.amenities!r})"

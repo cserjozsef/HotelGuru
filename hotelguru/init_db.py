@@ -38,17 +38,44 @@ db.session.add_all([ Amenity(name="Air conditioning"),
                      Amenity(name="Balcony")])
 
 #Address
-db.session.add(Address(city = "Veszprém",  street = "Egyetem u. 1", postalcode=8200))
+db.session.add(Address(city = "teszt",  street = "teszt utca", postalcode=1111))
 
-#User
-user = User( email="email@gmail.com", name="Lajos", phone="06121231234")
+#Users
+user = User( email="user@gmail.com", name="User", phone="06121231234")
+admin = User( email="admin@gmail.com", name="Admin", phone="06121231234")
+rec = User( email="rec@gmail.com", name="Receptionist", phone="06121231234")
+test = User( email="teszt@teszt.com", name="Teszt", phone="kitérdekel")
+
 user.address = db.session.get(Address, 1)
-user.set_password("qweasd")
+user.set_password("asd")
+
+admin.address = db.session.get(Address, 1)
+admin.set_password("asd")
+
+rec.address = db.session.get(Address, 1)
+rec.set_password("asd")
+
+test.address = db.session.get(Address, 1)
+test.set_password("test")
+
 db.session.add(user)
+db.session.add(admin)
+db.session.add(rec)
+db.session.add(test)
 
 u = db.session.get(User, 1)
-u.roles.append(db.session.get(Role,1))
-u.roles.append(db.session.get(Role,2))
+u.roles.append(db.session.get(Role, 2))
+
+a = db.session.get(User, 2)
+a.roles.append(db.session.get(Role, 1))
+
+r = db.session.get(User, 3)
+r.roles.append(db.session.get(Role, 3))
+
+t = db.session.get(User, 4)
+t.roles.append(db.session.get(Role, 1))
+t.roles.append(db.session.get(Role, 2))
+t.roles.append(db.session.get(Role, 3))
 
 #Room
 db.session.add(Room(type="single", price=30000, capacity=2, status="Available", description="Single room etc etc"))
