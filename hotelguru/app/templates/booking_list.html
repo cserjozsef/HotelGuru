@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>List of Bookings</h3>
+
+{% if bookings %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Check In Date</th>
+            <th>Check Out Date</th>
+            <th>Comment</th>
+            <th>User ID</th>
+            <th>Room ID</th>
+            <th>Invoice ID</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr >
+            {% for b in bookings %}
+            <td>{{ b.id }}</td>
+            <td>{{ b.check_in }}</td>
+            <td>{{ b.check_out }}</td>
+            <td>{{ b.comment }}</td>
+            <td>{{ b.user_id }}</td>
+            <td>{{ b.room_id }}</td>
+            <td>{{ b.invoice_id }}</td>
+
+            <th><a href="{{url_for('check_in_guest', id=b.room_id)}}">Check In Guest</a></th>
+            <th><a href="{{url_for('check_out_guest', id=b.room_id)}}">Check Out Guest</a></th>
+            <th><a href="{{url_for('delete_booking', id=b.id)}}">Cancel Booking </a></th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+  {% else %}
+<p>There are no bookings</p>
+  {% endif %}
+{% endblock %}

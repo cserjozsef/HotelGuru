@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Room: {{ room.id }}</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Number</th>
+            <th>Type</th>
+            <th>Capacity</th>
+            <th>Description</th>
+            <th>Amenities</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr >
+            <td>{{ room.id }}</td>
+            <td>{{ room.type }}</td>
+            <td>{{ room.capacity }}</td>
+            <td>{{ room.description }}</td>
+
+            <td>
+                {% for a in room.amenities %}
+                {{ a.name }}<br/>
+                {% endfor %}
+            </td>
+
+            <td>{{ room.status }}</td>
+        </tr>
+    </tbody>
+</table>
+
+
+&nbsp;&nbsp;
+<div>
+    {% if room.status == "Booked" %}
+        {% for item in bookings_list %}
+            <h5 style="color:red">Room Is Booked from {{ item.check_in }} to {{ item.check_out }}</h5>
+        {% endfor %}
+    {% else %}
+        <h5 style="color:green">Room Is Available Any Time</h5>
+    {% endif %}
+</div>
+
+
+&nbsp;&nbsp;
+<div>
+   <h3>Book Room</h3>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.check_in.label}}<br />
+            {{ form.check_in(size = 32)}}<br />
+            {% for error in form.check_in.errors %}
+                <span style="color:red;">[{{error}}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.check_out.label}}<br />
+            {{ form.check_out(size=32)}}<br />
+            {% for error in form.check_out.errors %}
+                <span style="color:red;">[{{error}}]</span>
+            {% endfor %}
+        </p>
+
+      <p>
+            {{ form.comment.label}}<br />
+            {{ form.comment(size=24)}}<br />
+            {% for error in form.comment.errors %}
+                <span style="color:red;">[{{error}}]</span>
+            {% endfor %}
+        </p>
+
+      <p>
+            {{ form.submit()}}
+      </p>
+
+    </form>
+</div>
+
+{% endblock %}
