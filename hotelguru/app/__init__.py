@@ -12,6 +12,7 @@ from app.forms.room_form import RoomForm
 from config import Config
 from app.extensions import db
 from app.models import *
+import calendar
 
 
 def create_app(config_class=Config):
@@ -35,19 +36,30 @@ def create_app(config_class=Config):
     @app.route("/")
     @app.route("/index")
     def index():
+        info = check_login()
+
+        return render_template("index.html", info=info)
+
+
+    def check_login():
         payload = verify_token(request.cookies.get("token"))
+        info = {
+            "logged_in": False,
+            "name": "",
+            "role": "",
+        }
 
         if payload:
-            logged_in = True
-            name = payload["name"]
-            role = payload["role"][0]
-            return render_template("index.html", name=name, role=role["name"], logged_in=logged_in)
+            info["logged_in"] = True
+            info["name"] = payload["name"]
+            info["role"] = payload["role"][0]
 
-        return render_template("index.html")
-
+        return info
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
+        info = check_login()
+
         form = RegisterForm()
 
         email = form.email.data
@@ -78,13 +90,15 @@ def create_app(config_class=Config):
                 return redir
             else:
                 flash("Email already in use", category="error")
-                return render_template("register.html", form=form)
+                return render_template("register.html", form=form, info=info)
 
-        return render_template("register.html", form=form)
+        return render_template("register.html", form=form, info=info)
 
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
+        info = check_login()
+
         form = LoginForm()
 
         email = form.email.data
@@ -99,13 +113,13 @@ def create_app(config_class=Config):
             #verify_token(response.json()["token"])
             if str(response.status_code) != "200":
                 flash("Invalid login credentials", category="error")
-                return render_template("login.html", form=form)
+                return render_template("login.html", form=form, info=info)
             else:
                 redir = make_response(redirect(url_for("index")))
                 redir.set_cookie('token', response.json()["token"])
                 return redir
 
-        return render_template("login.html",  form=form)
+        return render_template("login.html",  form=form, info=info)
 
 
     @app.route("/logout")
@@ -118,6 +132,8 @@ def create_app(config_class=Config):
 
     @app.route("/room_list", methods=["GET"])
     def room_list():
+        info = check_login()
+
         payload = verify_token(request.cookies.get("token"))
 
         role_name = ""
@@ -129,11 +145,13 @@ def create_app(config_class=Config):
         response = requests.get("http://localhost:8888/api/room/list_all")
         rooms = response.json()
 
-        return render_template("room_list.html", rooms=rooms, role=role_name)
+        return render_template("room_list.html", rooms=rooms, info=info)
 
 
     @app.route("/edit_user", methods=["GET", "POST"])
     def edit_user():
+        info = check_login()
+
         form = editUserForm()
         token  = request.cookies.get("token")
         payload = verify_token(token)
@@ -170,11 +188,14 @@ def create_app(config_class=Config):
                 return redir
             else:
                 flash("Something Went Wrong", category="error")
-        return render_template("edit_user.html", form=form)
+                render_template("edit_user.html", form=form, info=info)
+        return render_template("edit_user.html", form=form, info=info)
 
 
     @app.route("/room/<int:id>", methods=["GET", "POST", "PUT"])
     def book_room(id):
+        info = check_login()
+
         get_response = requests.get(f"http://localhost:8888/api/room/get/{id}")
         room = get_response.json()
 
@@ -186,11 +207,21 @@ def create_app(config_class=Config):
             if booking["room_id"] == room["id"]:
                 bookings_list.append(booking)
 
-        print(bookings_list)
-
         token = request.cookies.get("token")
         payload = verify_token(token)
         user_id = payload["user_id"]
+
+
+        if len(bookings_list) == 0:
+            requests.put("http://localhost:8888/api/room/update_status",
+                         json={
+                             "id": room["id"],
+                             "status": "Available"
+                         },
+                         headers={
+                             "Authorization": f"Bearer {token}",
+                             "Content-Type": "application/json"
+                         })
         
         form = BookingForm()
         check_in = form.check_in.data
@@ -232,12 +263,12 @@ def create_app(config_class=Config):
 
                 if str(booking_response.status_code and update_response.status_code) == "200":
                     flash("Successfully Booked Room")
-                    redir = make_response(redirect(url_for("room_list")))
+                    redir = make_response(redirect(url_for("book_room", id=id)))
                     return redir
                 else:
                     flash("Something Went Wrong", category="error")
 
-        return render_template("room_profile.html", room=room, id=room["id"], form=form, bookings_list=bookings_list)
+        return render_template("room_profile.html", room=room, id=room["id"], form=form, bookings_list=bookings_list, user_id=user_id, info=info)
 
 
     def validate_booking(check_in, check_out, bookings_list):
@@ -270,14 +301,18 @@ def create_app(config_class=Config):
 
     @app.route("/booking_list", methods=["GET"])
     def list_bookings():
+        info = check_login()
+
         response = requests.get("http://localhost:8888/api/booking/list_all")
         bookings = response.json()
 
-        return render_template("booking_list.html", bookings=bookings)
+        return render_template("booking_list.html", bookings=bookings, info=info)
 
 
     @app.route("/check_in_guest/<int:id>", methods=["GET", "POST"])
     def check_in_guest(id):
+        info = check_login()
+
         token = request.cookies.get("token")
 
         get_response = requests.get(f"http://localhost:8888/api/room/get/{id}")
@@ -300,11 +335,13 @@ def create_app(config_class=Config):
         else:
             flash("Something Went Wrong", category="error")
 
-        return render_template("booking_list.html")
+        return render_template("booking_list.html", info=info)
 
 
     @app.route("/check_out_guest/<int:id>", methods=["GET", "POST"])
     def check_out_guest(id):
+        info = check_login()
+
         token = request.cookies.get("token")
 
         get_response = requests.get(f"http://localhost:8888/api/room/get/{id}")
@@ -327,11 +364,13 @@ def create_app(config_class=Config):
         else:
             flash("Something Went Wrong", category="error")
 
-        return render_template("booking_list.html")
+        return render_template("booking_list.html", info=info)
 
 
     @app.route("/delete_booking/<int:id>", methods=["GET", "DELETE"])
     def delete_booking(id):
+        info = check_login()
+
         token = request.cookies.get("token")
         
         delete_response = requests.delete(f"http://localhost:8888/api/booking/delete/{id}",
@@ -347,11 +386,13 @@ def create_app(config_class=Config):
         else:
             flash("Something Went Wrong", category="error")
 
-        return render_template("booking_list.html")
+        return render_template("booking_list.html", info=info)
 
 
     @app.route("/delete_room/<int:id>", methods=["GET", "DELETE"])
     def delete_room(id):
+        info = check_login()
+
         token = request.cookies.get("token")
 
         get_response = requests.get(f"http://localhost:8888/api/booking/list_all")
@@ -374,12 +415,13 @@ def create_app(config_class=Config):
         else:
             flash("Something Went Wrong", category="error")
 
-        return render_template("/room_list.html")
-
+        return render_template("/room_list.html", info=info)
 
 
     @app.route("/add_room", methods=["GET", "POST"])
     def add_room():
+        info = check_login()
+
         token = request.cookies.get("token")
         form = RoomForm()
 
@@ -403,14 +445,17 @@ def create_app(config_class=Config):
                                      })
             if str(response.status_code) == "201":
                 flash("Room Successfully Added")
-                return render_template("/add_room.html", form=form)
+                return render_template("/add_room.html", form=form, info=info)
             else:
                 flash("Something Went Wrong", category="error")
 
-        return render_template("/add_room.html", form=form)
+        return render_template("/add_room.html", form=form, info=info)
+
 
     @app.route("/edit_room/<int:id>", methods=["GET", "PUT", "POST"])
     def edit_room(id):
+        info = check_login()
+
         token = request.cookies.get("token")
         form = RoomForm()
 
@@ -439,6 +484,6 @@ def create_app(config_class=Config):
             else:
                 flash("Something Went Wrong", category="error")
 
-        return render_template("/edit_room.html", form=form)
+        return render_template("/edit_room.html", form=form, info=info)
 
     return app

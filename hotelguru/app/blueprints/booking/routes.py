@@ -35,7 +35,7 @@ def booking_update(json_data):
 
 @bp.delete('/delete/<int:id>')
 @bp.auth_required(auth)
-@role_required(["Receptionist", "Administrator"])
+@role_required(["Receptionist", "Administrator", "User"])
 def booking_delete(id):
     success, response = BookingService.booking_delete(id)
     if success:

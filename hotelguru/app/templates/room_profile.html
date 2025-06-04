@@ -39,9 +39,12 @@
     {% if room.status != "Available" %}
         {% for item in bookings_list %}
             <h5 style="color:red">Room Is Booked from {{ item.check_in }} to {{ item.check_out }}</h5>
+            {% if user_id == item.user_id%}
+            <form action="/delete_booking/{{ item.user_id }}" method="delete">
+                <button style="display:inline" type="submit">Cancel Booking</button>
+            </form>
+            {% endif %}
         {% endfor %}
-    {% else %}
-        <h5 style="color:green">Room Is Available Any Time</h5>
     {% endif %}
 </div>
 
@@ -57,8 +60,7 @@
             {% for error in form.check_in.errors %}
                 <span style="color:red;">[{{error}}]</span>
             {% endfor %}
-        </p>
-        <p>
+
             {{ form.check_out.label}}<br />
             {{ form.check_out(size=32)}}<br />
             {% for error in form.check_out.errors %}

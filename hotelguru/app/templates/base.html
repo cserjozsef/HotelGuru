@@ -19,27 +19,37 @@
         <div class="navbar-nav">
           <a class="nav-item nav-link" id="index" href="/index">Home</a>
           <a class="nav-item nav-link" id="room_list" href="/room_list">List of Rooms</a>
-          {% if role == "Receptionist" %}
+          {% if info.role.name == "Receptionist" %}
           <a class="nav-item nav-link" id="booking_list" href="/booking_list">List of Bookings</a>
           {% endif %}
-          {% if not logged_in %}
-          <a class="nav-item nav-link" id="register" href="/register">Register</a>
-          {% endif %}
-          {% if not logged_in %}
-          <a class="nav-item nav-link" id="login" href="/login">Login</a>
-          {% endif %}
-          {% if logged_in %}
-          <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+          {% if info.logged_in %}
           <a class="nav-item nav-link" id="edit_user" href="/edit_user">Edit User</a>
           {% endif %}
-          {% if role == "Administrator" %}
+          {% if info.role.name == "Administrator" %}
           <a class="nav-item nav-link" id="add_room" href="/add_room">Add Room</a>
           {% endif %}
         </div>
       </div>
-         {% if name %}
-         <a class="nav-item" id="logged_in" style="color:lightgray">Welcome {{ name }}, logged in as {{ role }}</a>
-         {% endif %}
+
+      <div class="navbar navbar-expand-lg navbar-dark bg-dark">
+              <div class="navbar-nav ml-auto">
+                {% if info.name %}
+                <a class="nav-item nav-link" id="logged_in" style="color:rgba(255,255,255,.75)">Welcome {{ info.name }}, logged in as {{ info.role.name }}</a>
+                {% else %}
+                <a class="nav-item nav-link" id="not_logged_in" style="color:rgba(255,255,255,.75)">Not logged in</a>
+                {% endif %}
+                <a class="nav-item nav-link"></a>
+                <a class="nav-item nav-link"></a>
+                {% if not info.logged_in %}
+                <a class="nav-item nav-link" id="register" href="/register">Register</a>
+                {% endif %}
+                {% if not info.logged_in %}
+                <a class="nav-item nav-link" id="login" href="/login">Login</a>
+                {% else %}
+                <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+                {% endif %}
+              </div>
+      </div>
     </nav>
 
      {% with messages = get_flashed_messages(with_categories=true) %}
