@@ -36,7 +36,7 @@
 
 &nbsp;&nbsp;
 <div>
-    {% if room.status == "Booked" %}
+    {% if room.status != "Available" %}
         {% for item in bookings_list %}
             <h5 style="color:red">Room Is Booked from {{ item.check_in }} to {{ item.check_out }}</h5>
         {% endfor %}

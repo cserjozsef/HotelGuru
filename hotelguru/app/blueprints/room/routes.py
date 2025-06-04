@@ -13,7 +13,8 @@ def index():
 
 @bp.post('/add')
 @bp.input(RoomRequestSchema, location="json")
-#@bp.auth_required(auth)
+@bp.auth_required(auth)
+@role_required(["Administrator"])
 def room_add(json_data):
     success, response = RoomService.room_add(json_data)
     if success:
@@ -24,7 +25,8 @@ def room_add(json_data):
 @bp.put('/update')
 @bp.input(RoomUpdateSchema, location="json")
 @bp.output(RoomSchema)
-#@bp.auth_required(auth)
+@bp.auth_required(auth)
+@role_required(["Administrator"])
 def room_update(json_data):
     success, response = RoomService.room_update(json_data)
     if success:

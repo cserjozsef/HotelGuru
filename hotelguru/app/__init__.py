@@ -8,6 +8,7 @@ from app.forms.login_form import LoginForm
 from app.forms.register_form import RegisterForm
 from app.forms.edit_user_form import editUserForm
 from app.forms.booking_form import BookingForm
+from app.forms.room_form import RoomForm
 from config import Config
 from app.extensions import db
 from app.models import *
@@ -119,14 +120,16 @@ def create_app(config_class=Config):
     def room_list():
         payload = verify_token(request.cookies.get("token"))
 
-        logged_in = False
+        role_name = ""
+
         if payload:
-            logged_in = True
+            role = payload["role"][0]
+            role_name = role["name"]
 
         response = requests.get("http://localhost:8888/api/room/list_all")
         rooms = response.json()
 
-        return render_template("room_list.html", rooms=rooms, logged_in=logged_in)
+        return render_template("room_list.html", rooms=rooms, role=role_name)
 
 
     @app.route("/edit_user", methods=["GET", "POST"])
@@ -163,13 +166,15 @@ def create_app(config_class=Config):
                                      })
             if str(response.status_code) == "200":
                 flash("Changes Saved")
-                return render_template("edit_user.html", form=form)
+                redir = make_response(redirect(url_for("index")))
+                return redir
             else:
                 flash("Something Went Wrong", category="error")
         return render_template("edit_user.html", form=form)
 
+
     @app.route("/room/<int:id>", methods=["GET", "POST", "PUT"])
-    def room_page(id):
+    def book_room(id):
         get_response = requests.get(f"http://localhost:8888/api/room/get/{id}")
         room = get_response.json()
 
@@ -180,6 +185,8 @@ def create_app(config_class=Config):
         for booking in bookings:
             if booking["room_id"] == room["id"]:
                 bookings_list.append(booking)
+
+        print(bookings_list)
 
         token = request.cookies.get("token")
         payload = verify_token(token)
@@ -197,7 +204,7 @@ def create_app(config_class=Config):
             error, error_msg = validate_booking(check_in, check_out, bookings_list)
             if error:
                 flash(message=error_msg, category="error")
-                redir = make_response(redirect(url_for("room_page", id=id)))
+                redir = make_response(redirect(url_for("book_room", id=id)))
                 return redir
             else:
                 booking_response = requests.post("http://localhost:8888/api/booking/add",
@@ -260,12 +267,14 @@ def create_app(config_class=Config):
 
         return False, error_msg
 
+
     @app.route("/booking_list", methods=["GET"])
     def list_bookings():
         response = requests.get("http://localhost:8888/api/booking/list_all")
         bookings = response.json()
 
         return render_template("booking_list.html", bookings=bookings)
+
 
     @app.route("/check_in_guest/<int:id>", methods=["GET", "POST"])
     def check_in_guest(id):
@@ -340,5 +349,96 @@ def create_app(config_class=Config):
 
         return render_template("booking_list.html")
 
+
+    @app.route("/delete_room/<int:id>", methods=["GET", "DELETE"])
+    def delete_room(id):
+        token = request.cookies.get("token")
+
+        get_response = requests.get(f"http://localhost:8888/api/booking/list_all")
+        bookings = get_response.json()
+
+        for booking in bookings:
+            if booking["room_id"] == id:
+                delete_booking(booking["id"])
+
+        delete_response = requests.delete(f"http://localhost:8888/api/room/delete/{id}",
+                                          headers={
+                                              "Authorization": f"Bearer {token}",
+                                              "Content-Type": "application/json"
+                                          })
+
+        if str(delete_response.status_code) == "200":
+            flash("Room Successfully Deleted")
+            redir = make_response(redirect(url_for("room_list")))
+            return redir
+        else:
+            flash("Something Went Wrong", category="error")
+
+        return render_template("/room_list.html")
+
+
+
+    @app.route("/add_room", methods=["GET", "POST"])
+    def add_room():
+        token = request.cookies.get("token")
+        form = RoomForm()
+
+        type = form.type.data
+        price = form.price.data
+        capacity = form.capacity.data
+        description = form.description.data
+
+        if form.validate_on_submit():
+            response = requests.post("http://localhost:8888/api/room/add",
+                                     json={
+                                         "type": type,
+                                         "price": price,
+                                         "capacity": capacity,
+                                         "status": "Available",
+                                         "description": description,
+                                     },
+                                     headers={
+                                         "Authorization": f"Bearer {token}",
+                                         "Content-Type": "application/json"
+                                     })
+            if str(response.status_code) == "201":
+                flash("Room Successfully Added")
+                return render_template("/add_room.html", form=form)
+            else:
+                flash("Something Went Wrong", category="error")
+
+        return render_template("/add_room.html", form=form)
+
+    @app.route("/edit_room/<int:id>", methods=["GET", "PUT", "POST"])
+    def edit_room(id):
+        token = request.cookies.get("token")
+        form = RoomForm()
+
+        type = form.type.data
+        price = form.price.data
+        capacity = form.capacity.data
+        description = form.description.data
+
+        if form.validate_on_submit():
+            response = requests.put("http://localhost:8888/api/room/update",
+                                     json={
+                                         "id": id,
+                                         "type": type,
+                                         "price": price,
+                                         "capacity": capacity,
+                                         "description": description,
+                                     },
+                                     headers={
+                                         "Authorization": f"Bearer {token}",
+                                         "Content-Type": "application/json"
+                                     })
+            if str(response.status_code) == "200":
+                flash("Room Successfully Edited")
+                redir = make_response(redirect(url_for("room_list")))
+                return redir
+            else:
+                flash("Something Went Wrong", category="error")
+
+        return render_template("/edit_room.html", form=form)
 
     return app

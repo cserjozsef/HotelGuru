@@ -32,6 +32,9 @@
           <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
           <a class="nav-item nav-link" id="edit_user" href="/edit_user">Edit User</a>
           {% endif %}
+          {% if role == "Administrator" %}
+          <a class="nav-item nav-link" id="add_room" href="/add_room">Add Room</a>
+          {% endif %}
         </div>
       </div>
          {% if name %}

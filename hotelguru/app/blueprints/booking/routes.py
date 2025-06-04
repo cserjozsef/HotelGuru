@@ -25,7 +25,7 @@ def address_add(json_data):
 @bp.put('/update')
 @bp.input(BookingUpdateSchema, location="json")
 @bp.output(BookingSchema)
-#@bp.auth_required(auth)
+@bp.auth_required(auth)
 def booking_update(json_data):
     success, response = BookingService.booking_update(json_data)
     if success:
@@ -35,7 +35,7 @@ def booking_update(json_data):
 
 @bp.delete('/delete/<int:id>')
 @bp.auth_required(auth)
-@role_required(["Receptionist"])
+@role_required(["Receptionist", "Administrator"])
 def booking_delete(id):
     success, response = BookingService.booking_delete(id)
     if success:
