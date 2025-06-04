@@ -1,5 +1,5 @@
 from time import strptime
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 from apiflask import APIFlask
 from flask import render_template, redirect, url_for, make_response, flash, request
@@ -176,13 +176,9 @@ def create_app(config_class=Config):
         get_response = requests.get(f"http://localhost:8888/api/booking/list_all")
         bookings = get_response.json()
 
-        check_in_date = ""
-        check_out_date = ""
         bookings_list = []
         for booking in bookings:
             if booking["room_id"] == room["id"]:
-                check_in_date = booking["check_in"]
-                check_out_date = booking["check_out"]
                 bookings_list.append(booking)
 
         token = request.cookies.get("token")
@@ -198,8 +194,9 @@ def create_app(config_class=Config):
             comment = form.comment.data
 
         if form.validate_on_submit():
-            if validate_booking(check_in_date, check_out_date, check_in, check_out):
-                flash("Already Booked on Selected Dates", category="error")
+            error, error_msg = validate_booking(check_in, check_out, bookings_list)
+            if error:
+                flash(message=error_msg, category="error")
                 redir = make_response(redirect(url_for("room_page", id=id)))
                 return redir
             else:
@@ -236,17 +233,32 @@ def create_app(config_class=Config):
         return render_template("room_profile.html", room=room, id=room["id"], form=form, bookings_list=bookings_list)
 
 
-    def validate_booking(check_in_db, check_out_db, check_in_input, check_out_input):
-            present = datetime.now()
-            if check_in_db=="":
-                return False
-            else:
-                if ((check_in_input <= datetime.strptime(check_out_db, "%Y-%m-%d").date() and
-                        check_out_input >= datetime.strptime(check_in_db, "%Y-%m-%d").date())
-                        or present.date() > check_in_input):
-                    return True
-                else:
-                    return False
+    def validate_booking(check_in, check_out, bookings_list):
+        error_msg = ""
+
+        if check_out < check_in:
+            error_msg = "Check out date must be later than check in date."
+            return True, error_msg
+
+        current_date = datetime.now().date()
+        delta = check_in - current_date
+        if delta.days < 3:
+            error_msg = "Check in date must be 3 days from today."
+            return True, error_msg
+
+        intervals = []
+        current_interval = [check_in + timedelta(days=x) for x in range((check_out - check_in).days + 1)]
+
+        for booking in bookings_list:
+            intervals.append([datetime.strptime(booking["check_in"], "%Y-%m-%d").date() + timedelta(days=x)
+                              for x in range((datetime.strptime(booking["check_out"], "%Y-%m-%d").date() - datetime.strptime(booking["check_in"], "%Y-%m-%d").date()).days + 1)])
+
+        for interval in intervals:
+            if set(current_interval) & set(interval):
+                error_msg = "Booking dates overlap with another booking."
+                return True, error_msg
+
+        return False, error_msg
 
     @app.route("/booking_list", methods=["GET"])
     def list_bookings():
@@ -327,5 +339,6 @@ def create_app(config_class=Config):
             flash("Something Went Wrong", category="error")
 
         return render_template("booking_list.html")
+
 
     return app

@@ -31,8 +31,6 @@
                 {% endfor %}
             </td>
 
-            <td>{{ r.status }}</td>
-
             {% if logged_in %}
             <th><a href="{{url_for('room_page', id=r.id)}}">View Room</a></th>
             {% endif %}
