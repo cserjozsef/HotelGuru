@@ -1,0 +1,41 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<h2>Edit Room</h2>
+<form action="" method="post" novalidate>
+    {{ form.hidden_tag()}}
+    <p>
+        {{form.type.label}} <br />
+        {{form.type(size=15)}} <br />
+        {% for error in form.type.errors %}
+        <span style="color:red">[ {{error}} ]</span><br />
+        {% endfor %}
+    </p>
+    <p>
+        {{form.price.label}} <br />
+        {{form.price(size=15)}} <br />
+        {% for error in form.price.errors %}
+        <span style="color:red">[ {{error}} ]</span><br />
+        {% endfor %}
+    </p>
+    <p>
+        {{form.capacity.label}} <br />
+        {{form.capacity(size=15)}} <br />
+        {% for error in form.capacity.errors %}
+        <span style="color:red">[ {{error}} ]</span><br />
+        {% endfor %}
+    </p>
+    <p>
+        {{form.description.label}} <br />
+        {{form.description(size=15)}} <br />
+        {% for error in form.description.errors %}
+        <span style="color:red">[ {{error}} ]</span><br />
+        {% endfor %}
+
+    </p>
+    <p>
+        {{form.submit()}}
+    </p>
+</form>
+{% endblock %}
+
